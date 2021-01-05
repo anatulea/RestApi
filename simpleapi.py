@@ -5,11 +5,35 @@ app = Flask(__name__)
 
 api= Api(app)
 
-class HelloWorld(Resource):
-    def get(self):
-        return {'hello':'world'}
+puppies = []
 
-api.add_resource(HelloWorld, '/')
+class PuppyNames(Resource):
+    def get(self, name):
+        for pup in puppies:
+            if pup['name']== name:
+                return pup
+        return {'name': None}, 404
+
+    def post(self, name):
+        pup = {'name':name}
+        puppies.append(pup)
+        return pup
+
+    def delete(self, name):
+         for idx, pup in enumerate(puppies):
+            if pup['name'] == name:
+                deleted_pup = puppies.pop(idx)
+                return {'note':'delete success'}
+
+
+
+class AllNames(Resource):
+    def get(self):
+        return{'puppies':puppies}
+
+
+api.add_resource(PuppyNames, '/puppy/<string:name>')
+api.add_resource(AllNames, '/puppies')
 
 
 if __name__ =='__main__':
